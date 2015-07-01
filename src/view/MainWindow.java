@@ -1,11 +1,13 @@
 package view;
+
 import java.awt.*;
 import java.awt.event.*;
+import java.io.*;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 
 import logic.LogicMain;
-
 
 public class MainWindow implements ActionListener {
 
@@ -247,7 +249,8 @@ public class MainWindow implements ActionListener {
 	private void about() {
 
 		statusLabel.setText("Informations about this DBMS");
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("About this database");
 		generalPopup.setVisible(true);
 	}
@@ -255,7 +258,8 @@ public class MainWindow implements ActionListener {
 	private void queryRecord() {
 
 		statusLabel.setText("Querying record");
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Query a record");
 		generalPopup.setVisible(true);
 	}
@@ -263,7 +267,8 @@ public class MainWindow implements ActionListener {
 	private void delRecord() {
 
 		statusLabel.setText("Deleting record");
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Delete a record");
 		generalPopup.setVisible(true);
 	}
@@ -271,7 +276,8 @@ public class MainWindow implements ActionListener {
 	private void modRecord() {
 
 		statusLabel.setText("Modifying record");
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Modify a record");
 		generalPopup.setVisible(true);
 	}
@@ -279,7 +285,8 @@ public class MainWindow implements ActionListener {
 	private void addRecord() {
 
 		statusLabel.setText("Adding a new record");
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Add a new record");
 		generalPopup.setVisible(true);
 	}
@@ -287,7 +294,8 @@ public class MainWindow implements ActionListener {
 	private void delField() {
 
 		statusLabel.setText("Deleting field");
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Delete a field");
 		generalPopup.setVisible(true);
 	}
@@ -295,7 +303,8 @@ public class MainWindow implements ActionListener {
 	private void modField() {
 
 		statusLabel.setText("Modifying field");
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Modify a field");
 		generalPopup.setVisible(true);
 	}
@@ -303,15 +312,18 @@ public class MainWindow implements ActionListener {
 	private void addField() {
 
 		statusLabel.setText("Adding a new field");
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Add a new field");
 		generalPopup.setVisible(true);
+		
 	}
 
 	private void deleteTable() {
 
 		statusLabel.setText("Deleting table");
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Delete a table");
 		generalPopup.setVisible(true);
 	}
@@ -319,46 +331,220 @@ public class MainWindow implements ActionListener {
 	private void openTable() {
 
 		statusLabel.setText("Opening table");
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		JPanel openTablePanel = new JPanel();
+		final JComboBox tableNameBox = getComboBox("openTable");
+		JPanel buttonPanel = getButtonPanel(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		
+		openTablePanel.add(tableNameBox);
+		panel.add(openTablePanel, BorderLayout.CENTER);
+		panel.add(buttonPanel, BorderLayout.SOUTH);
+		
+		setDesignPanel(openTablePanel, "Please choose the table you want to open");
+		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Open a table");
 		generalPopup.setVisible(true);
 	}
 
-	private void modTable() {
+	private void modTable() {	// function not yet implemented
 
 		statusLabel.setText("Modifying table");
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		JPanel chooseTablePanel = new JPanel();
+		final JComboBox tableNameBox = getComboBox("modTable");
+		JPanel buttonPanel = getButtonPanel(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println(tableNameBox.getSelectedItem());
+			}
+		});
+		
+		chooseTablePanel.add(tableNameBox);
+		panel.add(chooseTablePanel,BorderLayout.CENTER);
+		panel.add(buttonPanel,BorderLayout.SOUTH);
+		
+		setDesignPanel(chooseTablePanel, "Choose the table you want to modify");
+		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Modify a table");
 		generalPopup.setVisible(true);
 	}
-
+	public void setDesignPanel(JPanel panel,String title) {
+		panel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder(title),
+				BorderFactory.createEmptyBorder(10,10,10,10)));
+	}
+// New
 	private void newTable() {
 
 		statusLabel.setText("Creating a new table");
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		JTextField databaseName = new JTextField(10);
+		JPanel buttonPanel = getButtonPanel(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				//System.out.println(databaseName.getText());
+				generalPopup.setVisible(false);
+			}
+		});
+		JPanel createPanel = new JPanel();
+		
+		
+		createPanel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder("Please enter the name of the table created"),
+				BorderFactory.createEmptyBorder(10,10,10,10)));
+		
+		createPanel.add(databaseName);
+		panel.add(createPanel,BorderLayout.CENTER);
+		panel.add(buttonPanel,BorderLayout.SOUTH);
+		
+		
+		
+		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Create a new table");
 		generalPopup.setVisible(true);
 	}
-
+	public JPanel getButtonPanel(ActionListener okayButtonListener) {
+		JPanel buttonPanel = new JPanel();
+		JButton okayButton = new JButton("Accept"), cancelButton = new JButton("Cancel");
+		
+		buttonPanel.add(okayButton);
+		buttonPanel.add(cancelButton);
+		
+		
+		
+		buttonPanel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder(""),
+				BorderFactory.createEmptyBorder(10,10,10,10)));
+		okayButton.addActionListener(okayButtonListener);
+		cancelButton.addActionListener(cancelListener);
+		
+		return buttonPanel;
+	}
+//New
 	private void openDatabase() {
 
 		statusLabel.setText("Opening database");
-		JPanel panel = new JPanel();
+		JPanel panel = new JPanel(new BorderLayout());
+		final JComboBox dbNameBox = getComboBox("openDatabase");
+		JPanel buttonPanel = getButtonPanel(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				System.out.println(dbNameBox.getSelectedItem()); // return the item named in the getComboBox() function, e.g the return item can be "boo", "getname", "db.getname"
+				if(dbNameBox.getSelectedItem() != null)
+				{
+					generalPopup.setVisible(false);
+					databaseName = (String) dbNameBox.getSelectedItem();
+					LogicMain m_pDocument = LogicMain.getDocument();
+					m_pDocument.setDatabaseName(databaseName);
+					m_pDocument.getDatabase();
+					String strError = m_pDocument.getError();
+					if (strError != null)
+					{
+//						AfxMessagstrError); //popup here JOptionPanel
+						m_pDocument.setError("");
+					}
+					else
+					{
+						if (m_pDocument.getDatabaseName() != null)
+						{
+//							CreateDatabaseTree(m_pDocument.getDatabaseName()); arbre
+							mainFrame.setTitle(m_pDocument.getDatabaseName());
+						}
+					}
+				}
+				
+			}
+		});
+		JPanel openPanel = new JPanel();
+//		JButton okayButton = new JButton("Accept"), cancelButton = new JButton("Cancel");
+		
+		
+//		dbNameBox = getComboBox();
+		// dbNameBox.getSelectedItem()
+		// to acccess the selected object
+		
+		openPanel.add(dbNameBox);
+//		buttonPanel.add(okayButton);
+//		buttonPanel.add(cancelButton);
+		
+		openPanel.setBorder(BorderFactory.createCompoundBorder(
+				BorderFactory.createTitledBorder("Please choose the database you want to open :"),
+				BorderFactory.createEmptyBorder(10,10,10,10)));
+//		buttonPanel.setBorder(BorderFactory.createCompoundBorder(
+//				BorderFactory.createTitledBorder(""),
+//				BorderFactory.createEmptyBorder(10,10,10,10)));
+		
+//		okayButton.addActionListener();
+//		cancelButton.addActionListener(cancelListener);
+		
+		panel.add(openPanel,BorderLayout.CENTER);
+		panel.add(buttonPanel,BorderLayout.SOUTH);
+		
+		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Open a database");
 		generalPopup.setVisible(true);
 	}
+	
+	
+	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public JComboBox getComboBox(String typeOfComboBox) 
+	{
+		LogicMain m_pDocument = LogicMain.getDocument();
+		JComboBox comboBox = new JComboBox<>();
+		if ( typeOfComboBox == "openDatabase") {
+			java.util.List<String> dbList = m_pDocument.getDBList();
+			String strError = m_pDocument.getError();
+			if(strError == null && dbList != null)
+			{
+				for(int i=0; i<dbList.size(); i++)
+					comboBox.addItem(dbList.get(i));
+			}
+			else
+			{
+//				AfxMessagstrError); //popup here JOptionPanel
+				m_pDocument.setError("");
+			}
 
+		} else if ( typeOfComboBox == "modTable") {
+//			JComboBox comboBox = new JComboBox<>();
+			comboBox.addItem(new Integer(2));
+			comboBox.addItem(new Integer(3));
+			comboBox.addItem(new Float(2.524));
+//			return comboBox;
+		} else if ( typeOfComboBox == "openTable") {
+//			JComboBox comboBox = new JComboBox<>();
+			comboBox.addItem(new Integer(2));
+			comboBox.addItem(new Integer(3));
+			comboBox.addItem(new Float(2.524));
+//			return comboBox;
+		} 
+		return comboBox;
+	}
+	
+	
+	
+// New open database
 	private void createDatabase() {
 
 		statusLabel.setText("Creating database");
 		JPanel panel = new JPanel(new BorderLayout());
 		JPanel buttonPanel = new JPanel();
 		JPanel createPanel = new JPanel();
-		JButton okayButton = new JButton("Accept"), cancelButton = new JButton("Cancel");
+		JButton okayButton = new JButton("ok"), cancelButton = new JButton("Cancel");
 		final JTextField dbnameText = new JTextField(10);
 
 		createPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Please put the name of the database :"),
+				BorderFactory.createTitledBorder("Please input the name of the database :"),
 						BorderFactory.createEmptyBorder(10,10,10,10)));
 		buttonPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder(""),
@@ -366,7 +552,6 @@ public class MainWindow implements ActionListener {
 
 		createPanel.add(dbnameText);
 		buttonPanel.add(okayButton);
-		buttonPanel.add(cancelButton);
 		
 		okayButton.addActionListener(new ActionListener() {
 			
@@ -375,13 +560,14 @@ public class MainWindow implements ActionListener {
 				databaseName = dbnameText.getText();
 				if (databaseName != null)
 				{
+					generalPopup.setVisible(false);
 					LogicMain m_pDocument = LogicMain.getDocument();
 					m_pDocument.setDatabaseName(databaseName);
 					m_pDocument.createDatabase();
 					String strError = m_pDocument.getError();
 					if (strError != null)
 					{
-//						AfxMessagstrError);
+//						AfxMessagstrError); //popup here JOptionPanel
 						m_pDocument.setError("");
 					}
 					else
@@ -394,8 +580,11 @@ public class MainWindow implements ActionListener {
 					}
 				}
 			}
-			
 		});
+		
+		buttonPanel.add(cancelButton);
+		
+//		okayButton.addActionListener(validCreateListener);
 		cancelButton.addActionListener(cancelListener);
 
 		panel.add(createPanel,BorderLayout.CENTER);
@@ -412,27 +601,7 @@ public class MainWindow implements ActionListener {
 //
 //		@Override
 //		public void actionPerformed(ActionEvent arg0) {
-//			
-//			if (databaseName != null)
-//			{
-//				LogicMain m_pDocument = LogicMain.getDocument();
-//				m_pDocument.setDatabaseName(databaseName);
-//				m_pDocument.createDatabase();
-//				String strError = m_pDocument.getError();
-//				if (strError != null)
-//				{
-////					AfxMessagstrError);
-//					m_pDocument.setError("");
-//				}
-//				else
-//				{
-//					if (m_pDocument.getDatabaseName() != null)
-//					{
-////						CreateDatabaseTree(m_pDocument.getDatabaseName()); arbre
-//						mainFrame.setTitle(m_pDocument.getDatabaseName());
-//					}
-//				}
-//			}
+//			// call functions or whatever to create a database
 //		}
 //		
 //	};

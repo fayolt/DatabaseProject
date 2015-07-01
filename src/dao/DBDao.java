@@ -2,6 +2,7 @@ package dao;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
@@ -28,6 +29,34 @@ public class DBDao
 		File file = new File(filename);	
 		return file.createNewFile();
 
+	}
+	@SuppressWarnings("unchecked")
+	public static List<String> getDBList() throws AppException, ClassNotFoundException, IOException
+	{
+		List<String> dbList = new ArrayList<String>();
+		File file = new File("init.db");
+		if (file.exists())
+		{
+			FileInputStream fileIn = new FileInputStream("init.db");
+			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
+			List<Database> list = new ArrayList<Database>();
+			list = (ArrayList<Database>) objectIn.readObject();
+			for (int i = 0; i < list.size();i++)
+			{
+				dbList.add(list.get(i).getDBName());
+				
+			}
+			fileIn.close();
+			objectIn.close();
+		}
+		else
+		{
+			throw new AppException(("A file Operation failed!"));
+		}
+		
+		
+		return dbList;
+		
 	}
 	@SuppressWarnings({ "resource", "unchecked" })
 	public boolean dbExist(Database db) throws AppException, IOException, ClassNotFoundException{

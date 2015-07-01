@@ -124,7 +124,21 @@ public class LogicMain {
 
 	}
 
-	void getDatabase()
+	public List<String> getDBList()
+	{
+		List<String> dbList = null;
+		try 
+		{
+			dbList = DBLogic.getDBList();
+		} catch (ClassNotFoundException | IOException | AppException  e) {
+			if(e instanceof AppException)
+				strError = ((AppException) e).getErrorMessage();
+			e.printStackTrace();
+		}
+		return dbList;
+	}
+	
+	public void getDatabase()
 	{
 		
 		dbEntity = new Database();

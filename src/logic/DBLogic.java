@@ -1,6 +1,7 @@
 package logic;
 
 import java.io.IOException;
+import java.util.List;
 
 import util.AppException;
 import dao.DBDao;
@@ -45,6 +46,11 @@ public class DBLogic {
 	{
 		DBDao dbDao = new DBDao();
 		return  dbDao.getDatabase(db_name, db);
+	}
+	
+	public static List<String> getDBList() throws ClassNotFoundException, AppException, IOException
+	{
+		return DBDao.getDBList();
 	}
 	
 }
