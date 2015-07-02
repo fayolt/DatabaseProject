@@ -50,7 +50,7 @@ public class TableLogic
 		boolean res = true;
 		
 		String filepath;
-		filepath = path + "\\" + tb.getTableName() + ".tdf";
+		filepath = tb.getTdfPath();
 		if (tbDao.isValidFile(filepath))
 		{
 			res = tbDao.addField(filepath, fd);

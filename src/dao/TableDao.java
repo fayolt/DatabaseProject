@@ -111,13 +111,19 @@ public class TableDao
 	{
 		boolean res = false;
 		File file = new File(filePath);
-		if (isValidFile(filePath))
+		if (!isValidFile(filePath))
 		{
 			JOptionPane.showMessageDialog(null, "Table with no fields, Add some fields!");
+			return false;
 		}
 		List<Field> fdList =  (List<Field>) FileHelper.ReadFile(filePath);
 		for(int i = 0; i<fdList.size();i++)
+		{
+			if(tb.fieldArray == null)
+				tb.fieldArray = new ArrayList<Field>();
 			tb.fieldArray.add(fdList.get(i));
+		}
+			
 		
 		if(tb.fieldArray!=null)
 		{

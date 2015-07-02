@@ -179,6 +179,12 @@ public class LogicMain {
 	public Table createTable(String tableName)
 	{
 		Table pTable = new Table(tableName);
+		
+		pTable.setTdfPath(dbEntity.getDBFilePath() + "\\" + tableName + ".tdf"); ;//set table definition file path
+		pTable.setTrdPath(dbEntity.getDBFilePath() + "\\" + tableName + ".trd");//set records file path;
+		pTable.setTicPath(dbEntity.getDBFilePath() + "\\" + tableName + ".tic");//set integrity description file path;
+		pTable.setTidPath(dbEntity.getDBFilePath() + "\\" + tableName + ".tid");//set index description file path;
+		
 		boolean res = true;
 		try
 		{
@@ -244,6 +250,11 @@ public class LogicMain {
 
 		if ( res == true)
 		{
+			if(tbEntity.fieldArray == null)
+			{
+				tbEntity.fieldArray = new ArrayList<Field>();
+			}
+				
 			tbEntity.fieldArray.add(field);
 		}
 		else
@@ -259,6 +270,7 @@ public class LogicMain {
 	{
 		if(tbArray == null)
 			tbArray = new ArrayList<Table>();
+			
 		else
 			tbArray.clear();
 //		Table pTable = new Table();
@@ -271,7 +283,7 @@ public class LogicMain {
 			strError = e.getErrorMessage();
 			e = null;
 		}
-
+		System.out.println("we are here");
 	}
 
 	void insertRecord(Record re)

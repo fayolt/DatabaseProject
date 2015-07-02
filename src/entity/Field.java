@@ -1,8 +1,9 @@
 package entity;
 
+import java.io.Serializable;
 import java.sql.Date;
 
-public class FieldEntity {
+public class Field implements Serializable {
 
 	private String m_strName;
 	//int m_nType;
@@ -13,22 +14,24 @@ public class FieldEntity {
 	private int m_nIntegrities;
 	private String defaultValue;
 
-	public FieldEntity(){
-		m_tCrTime.setTime(System.currentTimeMillis());
-		m_tMTime.setTime(System.currentTimeMillis());
+	public Field()
+	{
+		long millis = System.currentTimeMillis();
+		m_tCrTime = new Date(millis);
+		m_tMTime = new Date(millis);
 	}
-	/*public FieldEntity(FieldEntity fe){
+	/*public Field(Field fe){
 		m_tCrTime.setTime(System.currentTimeMillis());
 		m_tMTime.setTime(System.currentTimeMillis());
 	}*/
-	public FieldEntity(String x, String y, int z){
+	public Field(String x, String y, int z){
 		m_strName = x;
 		m_nType = y;
 		m_nIntegrities = z;
 		m_tCrTime.setTime(System.currentTimeMillis());
 		m_tMTime.setTime(System.currentTimeMillis());
 	}
-	public FieldEntity(FieldEntity fe){
+	public Field(Field fe){
 		m_strName = fe.m_strName;
 		m_nType = fe.m_nType;
 		m_nParam = fe.m_nParam;

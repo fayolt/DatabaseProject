@@ -28,13 +28,7 @@ public class Table implements Serializable {
 		m_strName = tb_name;
 		m_nFieldNum = 0;
 		m_nRecordNum = 0;
-		Path current = Paths.get("");
-		String currentDir = current.toAbsolutePath().toString();
-		m_strTdfPath = currentDir + "\\" + tb_name + ".tdf";//set table definition file path
-		m_strTrdPath = currentDir + "\\" + tb_name + ".trd";//set records file path;
-		m_strTicPath = currentDir + "\\" + tb_name + ".tic";//set integrity description file path;
-		m_strTidPath = currentDir + "\\" + tb_name + ".tid";//set index description file path;
-		
+
 		long millis = System.currentTimeMillis();
 		
 	    m_tCrTime = new Date(millis);//set creation time

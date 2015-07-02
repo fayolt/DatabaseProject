@@ -6,14 +6,18 @@ import java.io.*;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.MutableTreeNode;
+import javax.swing.tree.TreeSelectionModel;
 
 import entity.Field;
 import entity.Table;
 import logic.LogicMain;
 
-public class MainWindow implements ActionListener {
+public class MainWindow implements ActionListener, TreeSelectionListener {
 
 	private JFrame mainFrame,generalPopup;
 	private JMenuBar menuBar;
@@ -29,7 +33,7 @@ public class MainWindow implements ActionListener {
 	private JLabel statusLabel;
 	private String databaseName;
 	private JTree tree;
-	private DefaultMutableTreeNode root, table;
+	private DefaultMutableTreeNode root, table, moving=null;
 //	private ActionListener validCreateListener;
 //	private ActionListener cancelListener;
 
@@ -95,6 +99,8 @@ public class MainWindow implements ActionListener {
 //		root.
 		tree = new JTree(root);
 		tree.setRootVisible(false);
+		tree.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
+		tree.addTreeSelectionListener(this);
 		panelleft = new JScrollPane(tree);
 		panelright = new JScrollPane();
 		
@@ -355,22 +361,24 @@ public class MainWindow implements ActionListener {
 						integrity = 0;
 					field.setFieldIntegrities(integrity);
 					LogicMain m_pDocument = LogicMain.getDocument();
+					m_pDocument.setEditTable((String)moving.getUserObject());
 					field = m_pDocument.addField(field);
 					String strError = m_pDocument.getError();
 					if (strError != null)
 					{
-//						AfxMessagstrError); //popup here JOptionPanel
+						new JOptionPane(strError);
 						m_pDocument.setError("");
 					}
 					else
 					{
 						if (m_pDocument.getDatabaseName() != null)
 						{
-//							CreateDatabaseTree(m_pDocument.getDatabaseName()); arbre
 							mainFrame.setTitle(m_pDocument.getDatabaseName());
+							createNodes(table,"field",nameField.getText());
 						}
 					}
 				}
+				update();
 			}
 		});
 		fieldPanel.add(nameLabel);
@@ -491,19 +499,19 @@ public class MainWindow implements ActionListener {
 					String strError = m_pDocument.getError();
 					if (strError != null)
 					{
-//						AfxMessagstrError); //popup here JOptionPanel
+						new JOptionPane(strError);
 						m_pDocument.setError("");
 					}
 					else
 					{
 						if (m_pDocument.getDatabaseName() != null)
 						{
-//							CreateDatabaseTree(m_pDocument.getDatabaseName()); arbre
 							mainFrame.setTitle(m_pDocument.getDatabaseName());
+							table = createNodes(root,"table",tableName.getText());
 						}
 					}
 				}
-			
+				update();
 			}
 		});
 		JPanel createPanel = new JPanel();
@@ -556,7 +564,7 @@ public class MainWindow implements ActionListener {
 					String strError = m_pDocument.getError();
 					if (strError != null)
 					{
-						JOptionPane error = new JOptionPane(strError);
+						new JOptionPane(strError);
 						m_pDocument.setError("");
 					}
 					else
@@ -572,10 +580,12 @@ public class MainWindow implements ActionListener {
 							for(int i=0; i<tables.size(); i++)
 							{
 								table = createNodes(root, "table", tables.get(i).getTableName());
-								
-								for(int j=0; j<tables.get(i).getFieldArray().size(); j++)
+								if(tables.get(i).getFieldArray()!= null)
 								{
-									createNodes(table, "field", tables.get(i).getFieldArray().get(j).getFieldName());
+									for(int j=0; j<tables.get(i).getFieldArray().size(); j++)
+									{
+										createNodes(table, "field", tables.get(i).getFieldArray().get(j).getFieldName());
+									}
 								}
 									
 							}
@@ -583,7 +593,7 @@ public class MainWindow implements ActionListener {
 						}
 					}
 				}
-				
+				update();
 			}
 		});
 		JPanel openPanel = new JPanel();
@@ -707,6 +717,7 @@ public class MainWindow implements ActionListener {
 						}
 					}
 				}
+				update();
 			}
 		});
 		
@@ -755,5 +766,14 @@ public class MainWindow implements ActionListener {
 		parent.add(node);
 		return node;
 	}
-	
+
+	@Override
+	public void valueChanged(TreeSelectionEvent e) {
+		DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getLastSelectedPathComponent();
+		moving = node;
+	}
+	private void update() {
+		DefaultTreeModel model = (DefaultTreeModel) tree.getModel();
+		model.reload();
+	}
 }
