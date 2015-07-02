@@ -19,7 +19,7 @@ public class Table implements Serializable {
 	private Date m_tCrTime;
 	private Date m_tMTime;
 	
-	public List<FieldEntity> fieldArray; //list of fields in a table
+	public List<Field> fieldArray; //list of fields in a table
 	public Table()
 	{
 	}
@@ -40,7 +40,7 @@ public class Table implements Serializable {
 	    m_tCrTime = new Date(millis);//set creation time
 		m_tMTime = this.getTableCreationTime();//set last modification time to creation time
 
-		fieldArray = new ArrayList<FieldEntity>();
+		fieldArray = new ArrayList<Field>();
 	}
 	public Table(Table tb)
 	{
@@ -110,7 +110,13 @@ public class Table implements Serializable {
 	public void setTableMTime(Date tb_mtime){
 		this.m_tMTime = tb_mtime;
 	}
-
+	public List<Field> getFieldArray() {
+		return fieldArray;
+	}
+	public void setFieldArray(List<Field> fieldArray) {
+		this.fieldArray = fieldArray;
+	}
+	
 	//public void AddField(CFieldEntity&);
 	//CFieldEntity* getField(CString);
 

@@ -13,21 +13,27 @@ import javax.swing.JOptionPane;
 import util.AppException;
 import util.FileHelper;
 import entity.Database;
-import entity.FieldEntity;
+import entity.Field;
 import entity.Table;
 
-public class TableDao {
-	public boolean isValidFile(String filePath){
+public class TableDao 
+{
+	public boolean isValidFile(String filePath)
+	{
 		File file = new File(filePath);
 
 		return file.exists();
 	}
-	public boolean createTbFile(String filename) throws IOException{
+	
+	public boolean createTbFile(String filename) throws IOException
+	{
 		File file = new File(filename);	
 		return file.createNewFile();
 	}
+	
 	@SuppressWarnings({ "unchecked", "resource" })
-	public boolean tbExist(String filePath, Table tb) throws AppException, IOException, ClassNotFoundException{
+	public boolean tbExist(String filePath, Table tb) throws AppException, IOException, ClassNotFoundException
+	{
 		boolean res = false;
 		File file = new File(filePath);
 		if (file.exists())
@@ -61,60 +67,34 @@ public class TableDao {
 
 		return res;
 	}
-	/*
-	 * CFile Helper details
-	 * afxmessagebox equivalent in java
-	 * GetField function for?
-	 * */
+	
 	public boolean create(String filePath, Table tb)
 	{
-		return FileHelper.WriteFile(filePath, tb);
+		return FileHelper.writeFile(filePath, tb);
 	}
 	
-	public boolean AddField(String filePath, FieldEntity fe)
+	public boolean addField(String filePath, Field fd)
 	{
-		return FileHelper.WriteFile(filePath, fe);
+		return FileHelper.writeFile(filePath, fd);
 	}
 	
-	public boolean GetFields(String filePath, Table te) throws AppException{
-		boolean res = false;
-		File file = new File(filePath);
-		if (!(res = isValidFile(filePath)))
-		{
-			JOptionPane.showMessageDialog(null, "Table with no fields, Add some fields!");
-			return res;
-		}
-
-		ArrayList<FieldEntity> array =  FileHelper.ReadFile(filePath);
-		for(int i = 0; i<array.size();i++){
-			te.fieldArray.add(array.get(i));
-		}
-		if(te.fieldArray!=null){
-			res=true;
-		}
-		else
-		{
-			throw new AppException(("File Operation failed! Fields information cannot be read!"));
-			
-		}
-
-		return res;
-	}
-	
-	public int GetTables(String filePath, List<Table> tbArray) throws AppException{
+	@SuppressWarnings("unchecked")
+	public int getTables(String filePath, List<Table> tbArray) throws AppException
+	{
 		int index = 0;
 		if (!isValidFile(filePath))
 		{
-			
 			JOptionPane.showMessageDialog(null, "The selected database has no tables, Add some tables!");
 			return 0;
 		} 
-		ArrayList<Table> array = FileHelper.ReadFile(filePath);
-		for(int i = 0; i<array.size();i++){
-			tbArray.add(array.get(i));
-			GetFields(array.get(i).getTdfPath(), tbArray.get(i));
+		List<Table> tbList = (List<Table>) FileHelper.ReadFile(filePath);
+		for(int i = 0; i<tbList.size();i++)
+		{
+			tbArray.add(tbList.get(i));
+			getFields(tbList.get(i).getTdfPath(), tbArray.get(i));
 		}
-		if(tbArray!=null){
+		if(tbArray!=null)
+		{
 			index = tbArray.size();
 		}
 		else
@@ -125,4 +105,31 @@ public class TableDao {
 		
 		return index;
 	}
+	
+	@SuppressWarnings("unchecked")
+	public boolean getFields(String filePath, Table tb) throws AppException
+	{
+		boolean res = false;
+		File file = new File(filePath);
+		if (isValidFile(filePath))
+		{
+			JOptionPane.showMessageDialog(null, "Table with no fields, Add some fields!");
+		}
+		List<Field> fdList =  (List<Field>) FileHelper.ReadFile(filePath);
+		for(int i = 0; i<fdList.size();i++)
+			tb.fieldArray.add(fdList.get(i));
+		
+		if(tb.fieldArray!=null)
+		{
+			res=true;
+		}
+		else
+		{
+			throw new AppException(("File Operation failed! Fields information cannot be read!"));
+			
+		}
+
+		return res;
+	}
+
 }

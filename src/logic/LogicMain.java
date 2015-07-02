@@ -26,7 +26,7 @@ public class LogicMain {
 	Database dbEntity;//CDBEntity object
 	Table tbEntity;
 	List<Table> tbArray = null;
-	List<RecordEntity> recArray;
+	List<Record> recArray;
 	
 	static LogicMain document = null;
 
@@ -83,12 +83,25 @@ public class LogicMain {
 	}
 
 
-	public String getDatabaseName() {
+	public String getDatabaseName()
+	{
 		return databaseName;
 	}
 
+	public List<Table> getTbArray() 
+	{
+		return tbArray;
+	}
 
-	public void setDatabaseName(String m_nDatabaseName) {
+
+	public void setTbArray(List<Table> tbArray) 
+	{
+		this.tbArray = tbArray;
+	}
+
+
+	public void setDatabaseName(String m_nDatabaseName) 
+	{
 		databaseName = m_nDatabaseName;
 	}
 
@@ -141,16 +154,11 @@ public class LogicMain {
 	
 	public void getDatabase()
 	{
-		
 		dbEntity = new Database();
-		//TCHAR currentDir[MAX_PATH];
-		//GetCurrentDirectory(MAX_PATH, currentDir);
-		Path directory = Paths.get("");
-		String currentDir = directory.toAbsolutePath().toString();
-
+//		Path directory = Paths.get("");
+//		String currentDir = directory.toAbsolutePath().toString();
 		try
 		{
-			//SetCurrentDirectory(m_pRootDir);
 			try 
 			{
 				DBLogic.getDatabase(getDatabaseName(), dbEntity);
@@ -164,11 +172,9 @@ public class LogicMain {
 		{
 			strError = e.getErrorMessage();
 			e = null;
-			//SetCurrentDirectory(currentDir);
 		}
 		
 	}
-
 
 	public Table createTable(String tableName)
 	{
@@ -209,7 +215,7 @@ public class LogicMain {
 		return pTable;
 	}
 
-	void setEditTable(String tb_name)
+	public void setEditTable(String tb_name)
 	{
 		for (int i = 0; i < tbArray.size(); i++)
 		{
@@ -221,15 +227,12 @@ public class LogicMain {
 		}
 	}
 
-
-
-	FieldEntity AddField(FieldEntity field)
+	public Field addField(Field field)
 	{
-
-		boolean res=true;
+		boolean res = false;
 		try
 		{
-			res = TableLogic.AddField(getDatabaseName(), tbEntity, field);
+			res = TableLogic.addField(dbEntity.getDBFilePath(), tbEntity, field);
 		}
 		catch (AppException | IOException e)
 		{
@@ -252,15 +255,16 @@ public class LogicMain {
 		return field;
 	}
 
-
-	void loadTables()
+	public void loadTables()
 	{
-		
-		tbArray.clear();
-		Table pTable = new Table();
+		if(tbArray == null)
+			tbArray = new ArrayList<Table>();
+		else
+			tbArray.clear();
+//		Table pTable = new Table();
 		try
 		{
-			int i = TableLogic.GetTables(getDatabaseName(), tbArray);
+			 TableLogic.getTables(dbEntity, tbArray);
 		}
 		catch (AppException e)
 		{
@@ -270,7 +274,7 @@ public class LogicMain {
 
 	}
 
-	void insertRecord(RecordEntity re)
+	void insertRecord(Record re)
 	{
 		RecordLogic m_LogicRec = null;
 		m_LogicRec.insert(tbEntity , re);

@@ -6,7 +6,10 @@ import java.io.*;
 
 import javax.swing.*;
 import javax.swing.border.Border;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.MutableTreeNode;
 
+import entity.Field;
 import entity.Table;
 import logic.LogicMain;
 
@@ -25,6 +28,8 @@ public class MainWindow implements ActionListener {
 	private JSplitPane centerPanel;
 	private JLabel statusLabel;
 	private String databaseName;
+	private JTree tree;
+	private DefaultMutableTreeNode root, table;
 //	private ActionListener validCreateListener;
 //	private ActionListener cancelListener;
 
@@ -66,8 +71,7 @@ public class MainWindow implements ActionListener {
 		//		fileChooser = new JFileChooser();
 		//		fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
 		//		file = new File("");
-		panelleft = new JScrollPane();
-		panelright = new JScrollPane();
+		
 		toolbar = new JToolBar();
 		newFile = new JButton(new ImageIcon("Images/new.png"));
 		openFile = new JButton(new ImageIcon("Images/open.png"));
@@ -87,6 +91,13 @@ public class MainWindow implements ActionListener {
 		queryRecItem = new JMenuItem("Query Record(Q)");
 		aboutItem = new JMenuItem("About Database Management System (DMBS)(H)");
 
+		root = new DefaultMutableTreeNode("Root of Database"); // Top element of the tree list
+//		root.
+		tree = new JTree(root);
+		tree.setRootVisible(false);
+		panelleft = new JScrollPane(tree);
+		panelright = new JScrollPane();
+		
 	}
 
 	@SuppressWarnings("deprecation")
@@ -184,7 +195,7 @@ public class MainWindow implements ActionListener {
 		mainPanel.add(centerPanel,BorderLayout.CENTER);
 		mainPanel.add(statusLabel,BorderLayout.SOUTH);
 		//		mainPanel.add(panelright);
-
+		
 	}
 
 	public static void main(String args[]) {
@@ -314,6 +325,86 @@ public class MainWindow implements ActionListener {
 
 		statusLabel.setText("Adding a new field");
 		JPanel panel = new JPanel(new BorderLayout());
+		JPanel fieldPanel = new JPanel();
+		fieldPanel.setLayout(new BoxLayout(fieldPanel, BoxLayout.LINE_AXIS));
+//		fieldPanel.setSize(500, 100);
+		JPanel checkPanel = new JPanel();
+		final JComboBox dataTypeBox = getComboBox("addField");
+		JLabel nameLabel = new JLabel("Name");
+		JLabel dataTypeLabel = new JLabel("Data Type");
+		JLabel valeurParDefo = new JLabel("Default Value");
+		final JTextField nameField = new JTextField(10);
+		final JTextField defaultField = new JTextField(10);
+		final JCheckBox primary = new JCheckBox("Primary Key");
+		final JCheckBox mandatory = new JCheckBox("Not NULL");
+		JPanel buttonPanel = getButtonPanel(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				if (nameField.getText() != null)
+				{
+					generalPopup.setVisible(false);
+					Field field = new Field();
+					field.setFieldName(nameField.getText());
+					field.setDefaultValue(defaultField.getText());
+					field.setFieldType((String)dataTypeBox.getSelectedItem());
+					int integrity = -1;
+					if(primary.isSelected())
+						integrity = 1;
+					else if (mandatory.isSelected())
+						integrity = 0;
+					field.setFieldIntegrities(integrity);
+					LogicMain m_pDocument = LogicMain.getDocument();
+					field = m_pDocument.addField(field);
+					String strError = m_pDocument.getError();
+					if (strError != null)
+					{
+//						AfxMessagstrError); //popup here JOptionPanel
+						m_pDocument.setError("");
+					}
+					else
+					{
+						if (m_pDocument.getDatabaseName() != null)
+						{
+//							CreateDatabaseTree(m_pDocument.getDatabaseName()); arbre
+							mainFrame.setTitle(m_pDocument.getDatabaseName());
+						}
+					}
+				}
+			}
+		});
+		fieldPanel.add(nameLabel);
+		fieldPanel.add(nameField);
+		fieldPanel.add(dataTypeLabel);
+		fieldPanel.add(dataTypeBox);
+		fieldPanel.add(valeurParDefo);
+		fieldPanel.add(defaultField);
+		
+		primary.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				mandatory.setSelected(true);
+			}
+		});
+		mandatory.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+			}
+		});
+		
+		checkPanel.add(primary);
+		checkPanel.add(mandatory);
+		
+		panel.add(fieldPanel,BorderLayout.NORTH);
+		panel.add(checkPanel,BorderLayout.CENTER);
+		panel.add(buttonPanel,BorderLayout.SOUTH);
+		
+		setDesignPanel(fieldPanel, "Please complete the form below");
+		setDesignPanel(checkPanel, "");
+		
 		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Add a new field");
 		generalPopup.setVisible(true);
@@ -465,7 +556,7 @@ public class MainWindow implements ActionListener {
 					String strError = m_pDocument.getError();
 					if (strError != null)
 					{
-//						AfxMessagstrError); //popup here JOptionPanel
+						JOptionPane error = new JOptionPane(strError);
 						m_pDocument.setError("");
 					}
 					else
@@ -474,6 +565,21 @@ public class MainWindow implements ActionListener {
 						{
 //							CreateDatabaseTree(m_pDocument.getDatabaseName()); arbre
 							mainFrame.setTitle(m_pDocument.getDatabaseName());
+							root.setUserObject(m_pDocument.getDatabaseName());
+							tree.setRootVisible(true);
+							m_pDocument.loadTables();
+							java.util.List<Table> tables = m_pDocument.getTbArray();
+							for(int i=0; i<tables.size(); i++)
+							{
+								table = createNodes(root, "table", tables.get(i).getTableName());
+								
+								for(int j=0; j<tables.get(i).getFieldArray().size(); j++)
+								{
+									createNodes(table, "field", tables.get(i).getFieldArray().get(j).getFieldName());
+								}
+									
+							}
+							
 						}
 					}
 				}
@@ -542,7 +648,12 @@ public class MainWindow implements ActionListener {
 			comboBox.addItem(new Integer(2));
 			comboBox.addItem(new Integer(3));
 			comboBox.addItem(new Float(2.524));
-		} 
+		} else if ( typeOfComboBox == "addField" ) {
+			comboBox.addItem("VARCHAR");
+			comboBox.addItem("BOOLEAN");
+			comboBox.addItem("DOUBLE");
+			comboBox.addItem("DATETIME");
+		}
 		return comboBox;
 	}	
 	
@@ -571,6 +682,7 @@ public class MainWindow implements ActionListener {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				databaseName = dbnameText.getText();
+				
 				if (databaseName != null)
 				{
 					generalPopup.setVisible(false);
@@ -589,6 +701,9 @@ public class MainWindow implements ActionListener {
 						{
 //							CreateDatabaseTree(m_pDocument.getDatabaseName()); arbre
 							mainFrame.setTitle(m_pDocument.getDatabaseName());
+							tree.setRootVisible(true);
+							root.setUserObject(m_pDocument.getDatabaseName());
+							root = createNodes(root,"","");
 						}
 					}
 				}
@@ -606,6 +721,7 @@ public class MainWindow implements ActionListener {
 		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Create a new database");
 		generalPopup.setVisible(true);
+		
 
 	}
 	ActionListener cancelListener = new ActionListener() {
@@ -616,4 +732,28 @@ public class MainWindow implements ActionListener {
 		}
 		
 	};
+	
+	// to list the tree of the databases / tables ...
+	private DefaultMutableTreeNode createNodes(DefaultMutableTreeNode parent, String nodeType, String nameOfNode) {
+//		root = new DefaultMutableTreeNode(databaseName);
+//		tree = new JTree(root);
+//		tree.setRootVisible(true);
+		if(nodeType.equals("table"))
+		{
+			return getTreeNode(nameOfNode, parent);
+		}
+		else if(nodeType=="field")
+		{
+			return getTreeNode(nameOfNode, parent);
+		}
+		return parent;
+		
+	}
+
+	private DefaultMutableTreeNode getTreeNode(Object anything, DefaultMutableTreeNode parent) {
+		DefaultMutableTreeNode node = new DefaultMutableTreeNode(anything);
+		parent.add(node);
+		return node;
+	}
+	
 }
