@@ -152,7 +152,7 @@ public class LogicMain {
 			//SetCurrentDirectory(m_pRootDir);
 			try 
 			{
-				boolean res = DBLogic.getDatabase(getDatabaseName(), dbEntity);
+				DBLogic.getDatabase(getDatabaseName(), dbEntity);
 			
 			} catch (ClassNotFoundException | IOException e) {
 				

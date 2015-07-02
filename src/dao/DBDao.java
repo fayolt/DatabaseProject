@@ -1,9 +1,12 @@
 package dao;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInput;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,23 +40,21 @@ public class DBDao
 		File file = new File("init.db");
 		if (file.exists())
 		{
-			FileInputStream fileIn = new FileInputStream("init.db");
-			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-			List<Database> list = new ArrayList<Database>();
-			list = (ArrayList<Database>) objectIn.readObject();
+			InputStream fileIn = new FileInputStream("init.db");
+		    InputStream buffer = new BufferedInputStream(fileIn);
+		    ObjectInput input = new ObjectInputStream (buffer);
+			List<Database> list = (List<Database>) input.readObject();
 			for (int i = 0; i < list.size();i++)
 			{
 				dbList.add(list.get(i).getDBName());
 				
 			}
-			fileIn.close();
-			objectIn.close();
+			input.close();
 		}
 		else
 		{
 			throw new AppException(("A file Operation failed!"));
 		}
-		
 		
 		return dbList;
 		
@@ -106,36 +107,36 @@ public class DBDao
 		
 		return bAppend;
 	}
-
+	@SuppressWarnings("unchecked")
 	public boolean readDBBlock(String db_name, Database db) throws AppException, IOException, ClassNotFoundException{
 		boolean res = false;
 		File file = new File("init.db");
 		if (file.exists())
 		{
 			Database dbInfo = null;
-			FileInputStream fileIn = new FileInputStream("init.db");
-			ObjectInputStream objectIn = new ObjectInputStream(fileIn);
-			ArrayList<Object> list = new ArrayList<Object>();
-			list = (ArrayList<Object>) objectIn.readObject();
+			InputStream fileIn = new FileInputStream("init.db");
+		    InputStream buffer = new BufferedInputStream(fileIn);
+		    ObjectInput input = new ObjectInputStream (buffer);
+			List<Database> list = (List<Database>) input.readObject();
 			for (int i = 0; i<list.size();i++)
 			{
 				String str = "";
 				dbInfo = (Database) list.get(i);
 				str = dbInfo.getDBName();
 				
-				if (str == db.getDBName())
+				if (str.equalsIgnoreCase(db_name))
 				{
+					db.setDBName(dbInfo.getDBName());
+					db.setDBFilePath(dbInfo.getDBFilePath());
+					db.setDBType(dbInfo.getDBType());
+					db.setDBCreationTime(dbInfo.getDBCreationTime());
 					res = true;
-					throw new AppException(("Database already exist!"));
+					break;
+					
 				}
 			}
-
-			Database dbEntity = new Database(dbInfo);
-			db.setDBName(dbEntity.getDBName());
-			db.setDBFilePath(dbEntity.getDBFilePath());
-			db.setDBType(dbEntity.getDBType());
-			fileIn.close();
-			objectIn.close();
+			
+			input.close();
 		}
 		else
 		{
@@ -145,13 +146,9 @@ public class DBDao
 		return res;
 	}
 	public boolean getDatabase(String db_name, Database db) throws ClassNotFoundException, AppException, IOException{
-		boolean res = readDBBlock(db_name, db);
-//		if (res)
-//		{
-//			FileHelper.MoveToDBDirectory("data");
-//			//int i = _wchdir(db.getDBFilePath());
-//		}
-		return res;
+		
+		return  readDBBlock(db_name, db);
+
 	}
 	
 

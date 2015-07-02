@@ -1,12 +1,17 @@
 package util;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInput;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
 import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,35 +25,23 @@ public class FileHelper {
 	public static boolean writeFile(String filePath, Database db)
 	{
 		boolean res = false;
-		File file = new File(filePath);
 		
-		FileOutputStream fileOut = null;
-		ObjectOutputStream objectOut = null;
-		FileInputStream fileIn = null;
-		ObjectInputStream objectIn = null;
+//		File file = new File(filePath);
+//		FileOutputStream fileOut = null;
+//		ObjectOutputStream objectOut = null;
+//		FileInputStream fileIn = null;
 		List<Database> dbList;
 			
-		try 
+		try(InputStream fileIn = new FileInputStream(filePath);
+		    InputStream buffer = new BufferedInputStream(fileIn);
+		    ObjectInput input = new ObjectInputStream (buffer);) 
 		{
-			fileIn = new FileInputStream(filePath);
-			objectIn = new ObjectInputStream(fileIn);
-			dbList = (List<Database>) objectIn.readObject();
+			dbList = (List<Database>) input.readObject();
 		} catch (IOException | ClassNotFoundException e) 
 		{
 			dbList = new ArrayList<Database>();	
-		} finally
-		{
-			try 
-			{
-				if(objectIn!=null)
-					objectIn.close();
-				fileIn.close();
-			} catch (IOException e) 
-			{
-				e.printStackTrace();
-			}
-			
-		}
+		} 
+		
 		Database dbEntry = new Database();
 
 		dbEntry.setDBName(db.getDBName());
@@ -58,28 +51,17 @@ public class FileHelper {
 
 		dbList.add(dbEntry);
 
-		try 
+		try(OutputStream fileOut = new FileOutputStream(filePath);
+			OutputStream buffer = new BufferedOutputStream(fileOut);
+			ObjectOutput output = new ObjectOutputStream(buffer);
+		)
 		{
-			fileOut = new FileOutputStream(filePath, true);
-			objectOut = new ObjectOutputStream(fileOut);
-			objectOut.writeObject(dbList);
+			output.writeObject(dbList);
 			res =  true;
 		} catch (IOException e) 
 		{
 			e.printStackTrace();
-		} finally
-		{
-			try 
-			{
-				if(objectOut != null)
-					objectOut.close();
-				fileOut.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
-		}
-			
+		} 
 		return res;
 		
 	}

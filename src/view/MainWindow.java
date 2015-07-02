@@ -438,7 +438,6 @@ public class MainWindow implements ActionListener {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				System.out.println(dbNameBox.getSelectedItem()); // return the item named in the getComboBox() function, e.g the return item can be "boo", "getname", "db.getname"
 				if(dbNameBox.getSelectedItem() != null)
 				{
 					generalPopup.setVisible(false);
