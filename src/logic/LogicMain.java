@@ -3,6 +3,7 @@ package logic;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import util.AppException;
@@ -23,8 +24,8 @@ public class LogicMain {
 	private String databaseName;
 	String tableName;
 	Database dbEntity;//CDBEntity object
-	TableEntity tbEntity;
-	List<TableEntity> tbArray;
+	Table tbEntity;
+	List<Table> tbArray = null;
 	List<RecordEntity> recArray;
 	
 	static LogicMain document = null;
@@ -169,15 +170,15 @@ public class LogicMain {
 	}
 
 
-	TableEntity createTable(String tableName)
+	public Table createTable(String tableName)
 	{
-		TableEntity pTable = new TableEntity(tableName);
+		Table pTable = new Table(tableName);
 		boolean res = true;
 		try
 		{
 			try 
 			{
-				res = TableLogic.CreateTable(getDatabaseName(), pTable);
+				res = TableLogic.createTable(dbEntity, pTable);
 			
 			} catch (ClassNotFoundException | IOException e) {
 			
@@ -192,7 +193,11 @@ public class LogicMain {
 
 		if (res==true)
 		{
-
+			if(tbArray == null)
+			{
+				tbArray = new ArrayList<Table>();
+			}
+			
 			tbArray.add(pTable);
 		}
 		else
@@ -226,10 +231,12 @@ public class LogicMain {
 		{
 			res = TableLogic.AddField(getDatabaseName(), tbEntity, field);
 		}
-		catch (AppException e)
+		catch (AppException | IOException e)
 		{
-			strError = e.getErrorMessage();
-			e = null;
+			if(e instanceof AppException)
+				strError = ((AppException) e).getErrorMessage();
+				
+			e.printStackTrace();
 		}
 
 		if ( res == true)
@@ -250,7 +257,7 @@ public class LogicMain {
 	{
 		
 		tbArray.clear();
-		TableEntity pTable = new TableEntity();
+		Table pTable = new Table();
 		try
 		{
 			int i = TableLogic.GetTables(getDatabaseName(), tbArray);

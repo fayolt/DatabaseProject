@@ -8,12 +8,17 @@ import java.util.Date;
 
 public class Database implements Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4509207785258874608L;
 	private String m_strName;
 	private boolean m_bType;
 	private String m_strFilePath;
 	private Date m_tCrTime;
 	
-	public Database(){
+	public Database()
+	{
 		
 	}
 	
@@ -30,7 +35,8 @@ public class Database implements Serializable {
 		String currentDir = directory.toAbsolutePath().toString();
 		m_strFilePath = currentDir + "\\data\\" + db_name + "\\"; //set database path
 		m_bType = true;
-		//this.m_tCrTime.setTime(System.currentTimeMillis());
+		long millis = System.currentTimeMillis();
+		m_tCrTime = new Date(millis);
 	}
 	
 	public String getDBName(){

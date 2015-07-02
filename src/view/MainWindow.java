@@ -7,6 +7,7 @@ import java.io.*;
 import javax.swing.*;
 import javax.swing.border.Border;
 
+import entity.Table;
 import logic.LogicMain;
 
 public class MainWindow implements ActionListener {
@@ -380,32 +381,50 @@ public class MainWindow implements ActionListener {
 				BorderFactory.createTitledBorder(title),
 				BorderFactory.createEmptyBorder(10,10,10,10)));
 	}
-// New
+// New starting now...
 	private void newTable() {
 
 		statusLabel.setText("Creating a new table");
 		JPanel panel = new JPanel(new BorderLayout());
-		JTextField databaseName = new JTextField(10);
+		final JTextField tableName = new JTextField(10);
 		JPanel buttonPanel = getButtonPanel(new ActionListener() {
 			
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				//System.out.println(databaseName.getText());
-				generalPopup.setVisible(false);
+
+				if (tableName.getText() != null)
+				{
+					generalPopup.setVisible(false);
+					LogicMain m_pDocument = LogicMain.getDocument();
+					Table pTable = m_pDocument.createTable(tableName.getText());
+					String strError = m_pDocument.getError();
+					if (strError != null)
+					{
+//						AfxMessagstrError); //popup here JOptionPanel
+						m_pDocument.setError("");
+					}
+					else
+					{
+						if (m_pDocument.getDatabaseName() != null)
+						{
+//							CreateDatabaseTree(m_pDocument.getDatabaseName()); arbre
+							mainFrame.setTitle(m_pDocument.getDatabaseName());
+						}
+					}
+				}
+			
 			}
 		});
 		JPanel createPanel = new JPanel();
 		
 		
 		createPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Please enter the name of the table created"),
+				BorderFactory.createTitledBorder("Please enter the name of the table to be created"),
 				BorderFactory.createEmptyBorder(10,10,10,10)));
 		
-		createPanel.add(databaseName);
+		createPanel.add(tableName);
 		panel.add(createPanel,BorderLayout.CENTER);
 		panel.add(buttonPanel,BorderLayout.SOUTH);
-		
-		
 		
 		generalPopup.setContentPane(panel);
 		generalPopup.setTitle("Create a new table");
@@ -418,8 +437,6 @@ public class MainWindow implements ActionListener {
 		buttonPanel.add(okayButton);
 		buttonPanel.add(cancelButton);
 		
-		
-		
 		buttonPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder(""),
 				BorderFactory.createEmptyBorder(10,10,10,10)));
@@ -428,7 +445,7 @@ public class MainWindow implements ActionListener {
 		
 		return buttonPanel;
 	}
-//New
+//open database done!
 	private void openDatabase() {
 
 		statusLabel.setText("Opening database");
@@ -514,25 +531,22 @@ public class MainWindow implements ActionListener {
 				m_pDocument.setError("");
 			}
 
-		} else if ( typeOfComboBox == "modTable") {
-//			JComboBox comboBox = new JComboBox<>();
+		} else if ( typeOfComboBox == "modTable") 
+		{
 			comboBox.addItem(new Integer(2));
 			comboBox.addItem(new Integer(3));
 			comboBox.addItem(new Float(2.524));
-//			return comboBox;
-		} else if ( typeOfComboBox == "openTable") {
-//			JComboBox comboBox = new JComboBox<>();
+
+		} else if ( typeOfComboBox == "openTable") 
+		{
 			comboBox.addItem(new Integer(2));
 			comboBox.addItem(new Integer(3));
 			comboBox.addItem(new Float(2.524));
-//			return comboBox;
 		} 
 		return comboBox;
-	}
+	}	
 	
-	
-	
-// New open database
+// create database done!
 	private void createDatabase() {
 
 		statusLabel.setText("Creating database");
@@ -543,7 +557,7 @@ public class MainWindow implements ActionListener {
 		final JTextField dbnameText = new JTextField(10);
 
 		createPanel.setBorder(BorderFactory.createCompoundBorder(
-				BorderFactory.createTitledBorder("Please input the name of the database :"),
+				BorderFactory.createTitledBorder("Please input the name of the database to be created"),
 						BorderFactory.createEmptyBorder(10,10,10,10)));
 		buttonPanel.setBorder(BorderFactory.createCompoundBorder(
 				BorderFactory.createTitledBorder(""),
@@ -594,16 +608,6 @@ public class MainWindow implements ActionListener {
 		generalPopup.setVisible(true);
 
 	}
-	
-	
-//	ActionListener validCreateListener = new ActionListener() {
-//
-//		@Override
-//		public void actionPerformed(ActionEvent arg0) {
-//			// call functions or whatever to create a database
-//		}
-//		
-//	};
 	ActionListener cancelListener = new ActionListener() {
 
 		@Override

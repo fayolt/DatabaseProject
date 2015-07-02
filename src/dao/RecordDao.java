@@ -8,14 +8,14 @@ import util.AppException;
 import util.FileHelper;
 import entity.FieldEntity;
 import entity.RecordEntity;
-import entity.TableEntity;
+import entity.Table;
 
 /*
  * FINISH RecordEntity FIRST!
  * */
 
 public class RecordDao {
-	public boolean insert(TableEntity te, RecordEntity re){
+	public boolean insert(Table te, RecordEntity re){
 		boolean res = true;
 		String filepath;
 		filepath = te.getTableName() + ".trd";
@@ -45,7 +45,7 @@ public class RecordDao {
 	/*
 	 * Java can use sql data type by using package java.sql
 	 * */
-	public boolean Read(File file, TableEntity te, RecordEntity re){
+	public boolean Read(File file, Table te, RecordEntity re){
 		boolean res = false;
 		//		for (int i = 0; i < te.fieldArray.size(); i++)
 		//		{
@@ -128,7 +128,7 @@ public class RecordDao {
 		//		}
 		return res;
 	}
-	public int SelectAll(TableEntity te, List<RecordEntity>data) throws AppException{
+	public int SelectAll(Table te, List<RecordEntity>data) throws AppException{
 		String filepath;
 		filepath = te.getTableName() + ".trd";
 		File file = new File(filepath);

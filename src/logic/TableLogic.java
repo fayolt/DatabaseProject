@@ -6,22 +6,23 @@ import java.util.List;
 
 import util.AppException;
 import dao.TableDao;
+import entity.Database;
 import entity.FieldEntity;
-import entity.TableEntity;
+import entity.Table;
 
 public class TableLogic {
 
-	public static boolean CreateTable(String db_name, TableEntity te) throws AppException, ClassNotFoundException, IOException
+	public static boolean createTable(Database db, Table tb) throws AppException, ClassNotFoundException, IOException
 	{
 		TableDao newTable = new TableDao() ;
 	
 		String filepath;
-		filepath = db_name + ".tb";
-		if (newTable.IsValidFile(filepath))
+		filepath = db.getDBFilePath() + "\\" +db.getDBName() + ".tb";
+		if (newTable.isValidFile(filepath))
 		{
-			if (!newTable.TbExist(filepath,te))
+			if (!newTable.tbExist(filepath,tb))
 			{
-				return newTable.Create(filepath, te);
+				return newTable.create(filepath, tb);
 			}
 			else
 			{
@@ -31,9 +32,9 @@ public class TableLogic {
 		}
 		else
 		{
-			if (newTable.CreateTbFile(filepath))
+			if (newTable.createTbFile(filepath))
 			{
-				return newTable.Create(filepath, te);
+				return newTable.create(filepath, tb);
 			}
 			else
 			{
@@ -43,20 +44,20 @@ public class TableLogic {
 		
 	}
 	
-	public static boolean AddField(String db_name, TableEntity te, FieldEntity fe) throws AppException
+	public static boolean AddField(String db_name, Table te, FieldEntity fe) throws AppException, IOException
 	{
 		TableDao newTable = new TableDao();
 		boolean res = true;
 		
 		String filepath;
 		filepath = te.getTableName() + ".tdf";
-		if (newTable.IsValidFile(filepath))
+		if (newTable.isValidFile(filepath))
 		{
 			res = newTable.AddField(filepath, fe);
 		}
 		else
 		{
-			if (newTable.CreateTbFile(filepath))
+			if (newTable.createTbFile(filepath))
 			{
 				res = newTable.AddField(filepath, fe);
 			}
@@ -68,7 +69,7 @@ public class TableLogic {
 		return res;
 	}
 	
-	static int GetTables(String db_name, List<TableEntity> tbArray) throws AppException
+	static int GetTables(String db_name, List<Table> tbArray) throws AppException
 	{								
 		TableDao tableDao = new TableDao();
 		String filepath;

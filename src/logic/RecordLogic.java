@@ -8,7 +8,7 @@ import util.AppException;
 import dao.RecordDao;
 import entity.FieldEntity;
 import entity.RecordEntity;
-import entity.TableEntity;
+import entity.Table;
 
 
 public class RecordLogic {
@@ -48,7 +48,7 @@ public class RecordLogic {
 	}
 	
 	
-	public boolean insert(TableEntity te, RecordEntity re)
+	public boolean insert(Table te, RecordEntity re)
 	{
 		String filepath;
 		filepath = te.getTableName() + ".trd" ;
@@ -88,7 +88,7 @@ public class RecordLogic {
 		
 	}
 	
-	public boolean SelectAll(TableEntity te, List<RecordEntity> data) throws AppException
+	public boolean SelectAll(Table te, List<RecordEntity> data) throws AppException
 	{										//vector<CRecordEntity> &data
 		RecordDao m_daoRec = null;
 		//FINISH RecordEntity FIRST!
