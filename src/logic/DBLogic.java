@@ -7,7 +7,8 @@ import util.AppException;
 import dao.DBDao;
 import entity.Database;
 
-public class DBLogic {
+public class DBLogic 
+{
 	
 	public static boolean createDatabase(Database db) throws ClassNotFoundException, AppException, IOException
 	{
@@ -40,7 +41,6 @@ public class DBLogic {
 		}
 
 	}
-
 
 	public static boolean getDatabase(String db_name, Database db) throws ClassNotFoundException, AppException, IOException
 	{

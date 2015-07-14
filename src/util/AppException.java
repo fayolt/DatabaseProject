@@ -1,6 +1,7 @@
 package util;
 
-public class AppException extends Exception {
+public class AppException extends Exception 
+{
 	
 	/**
 	 * 
@@ -15,7 +16,6 @@ public class AppException extends Exception {
 		m_nCode = 0;
 	}
 	
-
 	public AppException(String strError)
 	{
 		m_strError = strError;

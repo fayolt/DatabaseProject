@@ -1,18 +1,22 @@
 package dao;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
 import util.AppException;
 import util.FileHelper;
-import entity.Database;
 import entity.Field;
 import entity.Table;
 
@@ -136,6 +140,46 @@ public class TableDao
 		}
 
 		return res;
+	}
+
+	@SuppressWarnings("unchecked")
+	public boolean update(Table tb, Vector data)
+	{
+		boolean res = false;
+
+		List<Field> fdList = new ArrayList<Field>();
+		
+		for (int i = 0; i < data.size(); i++)
+		{
+			List<Object> fdetails = (List<Object>) data.get(i);
+			Field fdEntry = new Field();
+			fdEntry.setFieldName(fdetails.get(0).toString());
+			fdEntry.setFieldType(fdetails.get(1).toString());
+			fdEntry.setDefaultValue(fdetails.get(4).toString());
+			if(fdetails.get(3).toString().equalsIgnoreCase("Primary Key") || fdetails.get(3).toString().equalsIgnoreCase("PK"))
+				fdEntry.setFieldIntegrities(1);
+			else if(fdetails.get(2).toString().equalsIgnoreCase("Not Null"))
+				fdEntry.setFieldIntegrities(0);
+			else
+				fdEntry.setFieldIntegrities(-1);
+			
+			fdList.add(fdEntry);
+			
+			System.out.println(fdList);
+		}
+		
+		try(OutputStream fileOut = new FileOutputStream(tb.getTdfPath());
+			OutputStream buffer = new BufferedOutputStream(fileOut);
+			ObjectOutput output = new ObjectOutputStream(buffer);)
+		{
+			output.writeObject(fdList);
+			res =  true;
+		} catch (IOException e) 
+		{
+			e.printStackTrace();
+		} 
+		return res;
+		
 	}
 
 }

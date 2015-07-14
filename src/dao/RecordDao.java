@@ -1,160 +1,194 @@
 package dao;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
-import java.sql.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.ObjectInput;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutput;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
 
 import util.AppException;
-import util.FileHelper;
 import entity.Field;
 import entity.Record;
 import entity.Table;
 
-/*
- * FINISH Record FIRST!
- * */
 
 public class RecordDao 
 {
-	public boolean insert(Table te, Record re)
+	public boolean isValidFile(String filePath)
 	{
-		boolean res = true;
-		String filepath;
-		filepath = te.getTableName() + ".trd";
-		File file = new File(filepath);
-		if (file.exists())
-		{
+		File file = new File(filePath);
 
-			for (int i = 0; i < te.fieldArray.size(); i++)
-			{
-				Field pField = te.fieldArray.get(i);
-				String strFieldName = pField.getFieldName();
-				String strValue = re.Get(strFieldName);
-				char value;
-				int intValue;
-				boolean boolValue;
-				Date tValue;
-				FileHelper.writeFile(filepath, pField); // CONFIRM THIS!
-			}
-		}
-		else
-		{
-			res = false;
-		}
-
-		return res;
+		return file.exists();
 	}
-	/*
-	 * Java can use sql data type by using package java.sql
-	 * */
-	public boolean Read(File file, Table te, Record re){
+	
+	public boolean createTRDFile(String filename) throws IOException
+	{
+		File file = new File(filename);	
+		return file.createNewFile();
+	}
+	
+	@SuppressWarnings("unchecked")
+	public boolean insert(Table tb, Record rec)
+	{
 		boolean res = false;
-		//		for (int i = 0; i < te.fieldArray.size(); i++)
-		//		{
-		//			Field pField = te.fieldArray.get(i);
-		//			String strFieldName = pField.getFieldName();
-		//			String strValue = re.Get(strFieldName);
-		//			
-		//			FileHelperTemplate fileHelper;
-		//			if (pField.getFieldType() == "VARCHAR")
-		//			{
-		//				char value;
-		//				if (file.Read(&value, sizeof(VARCHAR)))
-		//				{
-		//					String str = CharHelper.VarcharToCString(value);
-		//					re.Put(strFieldName, str);
-		//					res = true;
-		//				}
-		//				else
-		//				{
-		//					res = false;
-		//				}
-		//				
-		//			}
-		//			else if (pField.getFieldType() == "INTEGER")
-		//			{
-		//				int intValue;
-		//				if (file.Read(intValue, sizeof(int)))
-		//				{
-		//					String str;
-		//					str.Format(L"%d", intValue);
-		//					re.Put(strFieldName, str);
-		//					res = true;
-		//				}
-		//				else
-		//				{
-		//					res = false;
-		//				}
-		//				
-		//			}
-		//			else if (pField.getFieldType() == "BOOLEAN")
-		//			{
-		//				boolean boolValue;
-		//				if (file.Read(&boolValue, sizeof(BOOLEAN)))
-		//				{
-		//					String str;
-		//					if (boolValue)
-		//					{
-		//						str = "TRUE";
-		//					}
-		//					else
-		//					{
-		//						str = "FALSE";
-		//					}
-		//					re.Put(strFieldName, str);
-		//					res = true;
-		//				}
-		//				else
-		//				{
-		//					res = false;
-		//				}
-		//			
-		//			}
-		//			else
-		//			{
-		//				DATETIME tValue;
-		//				if (file.Read(&tValue, sizeof(DATETIME)))
-		//				{
-		//					String str;
-		//					str.Format(_T("%u-%u-%u"),
-		//						tValue.wYear, tValue.wMonth, tValue.wDay);
-		//					re.Put(strFieldName, str);
-		//					res = true;
-		//				}
-		//				else
-		//				{
-		//					res = false;
-		//				}
-		//				
-		//			}
-		//		}
+		Set<List<?>> recSet = (Set<List<?>>) read(tb);//read trd file
+		
+		String pk_field = null;//primary key constraint check from here
+		for (int i = 0; i < tb.getFieldArray().size(); i++)
+		{
+			Field pField = tb.getFieldArray().get(i);
+			if(pField.getFieldIntegrities()==1)
+			{
+				pk_field = pField.getFieldName();
+				break;
+			}	
+		}
+		Object[] array = recSet.toArray();
+		for(int i=0; i<array.length;i++)
+		{
+			List<Object> list = (List<Object>) array[i];
+			Record p_rec = new Record();
+			for(int j=0; j<tb.getFieldArray().size();j++)
+			{
+				p_rec.put(tb.getFieldArray().get(j).getFieldName(), list.get(j));
+			}
+			
+			if((rec.get(pk_field)).toString().equalsIgnoreCase((p_rec.get(pk_field)).toString()))
+			{
+				JOptionPane.showMessageDialog(null, "primary key constraint violated!");
+				return false;
+			}
+				
+		}//primary key constraint check to here
+		List<Object> recList = new ArrayList<Object>();
+		for (int i = 0; i < tb.getFieldArray().size(); i++)
+		{
+			Field pField = tb.getFieldArray().get(i);
+			String strFieldName = pField.getFieldName();
+			Object recEntry = rec.get(strFieldName);
+			recList.add(recEntry);
+		}
+		if(!recSet.add(recList))
+		{
+			JOptionPane.showMessageDialog(null, "duplicated row, insert operation aborted!");
+			return false;
+		}
+		try(FileOutputStream fileOut = new FileOutputStream(tb.getTrdPath(),false);
+			OutputStream buffer = new BufferedOutputStream(fileOut);
+			ObjectOutput output = new ObjectOutputStream(buffer);)
+		{
+			output.writeObject(recSet);
+			res =  true;
+		} catch (IOException e) 
+		{
+			e.printStackTrace();
+		} 
 		return res;
 	}
-	public int SelectAll(Table te, List<Record>data) throws AppException{
-		String filepath;
-		filepath = te.getTableName() + ".trd";
-		File file = new File(filepath);
-		if (file.exists())
-		{
+	
+	@SuppressWarnings("unchecked")
+	public Set<?> read(Table tb)
+	{
+		Set<List<?>> recSet;
 
-			while (true)
-			{
-				Record pRecEntity = new Record();
-				if (Read(file, te, pRecEntity)==true)
-				{
-					data.add(pRecEntity);
-				}
-				else
-				{
-					pRecEntity = null;
-					break;
-				}
-			}
-		}
-		else
+		try(InputStream fileIn = new FileInputStream(tb.getTrdPath());
+				InputStream buffer = new BufferedInputStream(fileIn);
+				ObjectInput input = new ObjectInputStream (buffer);) 
 		{
-			throw new AppException("File Operation failed! Record information cannot be read!");
+			recSet = (Set<List<?>>) input.readObject();
+		} catch (IOException | ClassNotFoundException e) 
+		{	
+			recSet = new HashSet<List<?>>();
+		}
+		return recSet; 
+	}
+	
+	public int selectAll(Table tb, List<Record>data) throws AppException
+	{
+		Set<?> recSet = read(tb);
+		Object[] array = recSet.toArray();
+		for(int i=0; i<array.length;i++)
+		{
+			List<Object> list = (List<Object>) array[i];
+			for(int j=0; j<tb.getFieldArray().size();j++)
+			{
+				Record rec = new Record();
+				rec.put(tb.getFieldArray().get(j).getFieldName(), list.get(j));
+				data.add(rec);
+			}
 		}
 		return 0;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public boolean update(Table tb, Vector data)
+	{
+		boolean res = false;
+
+		Set<List<?>> recSet = new HashSet<List<?>>();
+		List<Object> recList = new ArrayList<Object>();
+		
+		
+		int pos = -1;//primary key constraint check start
+		for (int i = 0; i < tb.getFieldArray().size(); i++)
+		{
+			Field pField = tb.getFieldArray().get(i);
+			if(pField.getFieldIntegrities()==1)
+			{
+				pos = i;
+				break;
+			}	
+		}
+		if(pos!=-1)
+		{
+			List<Object> pk_value_list = new ArrayList<Object>();
+			for(int i=0; i<data.size();i++)
+			{
+				recList = (List<Object>) data.get(i);
+				pk_value_list.add(recList.get(pos));
+			}
+			Set<Object> pk_value_set = new HashSet<Object>(pk_value_list);
+			if(pk_value_set.size() < pk_value_list.size())
+			{
+				JOptionPane.showMessageDialog(null, "primary key constraint violated!");
+				return false;
+			}
+		}//primary key constraint check end
+		
+		for (int i = 0; i < data.size(); i++)
+		{
+			recList = (List<Object>) data.get(i);
+			if(!recSet.add(recList))
+			{
+				JOptionPane.showMessageDialog(null, "duplicated row, update operation aborted!");
+				return false;
+			}
+			System.out.println(recSet);
+		}
+		try(FileOutputStream fileOut = new FileOutputStream(tb.getTrdPath(),false);
+			OutputStream buffer = new BufferedOutputStream(fileOut);
+			ObjectOutput output = new ObjectOutputStream(buffer);)
+		{
+			output.writeObject(recSet);
+			res =  true;
+		} catch (IOException e) 
+		{
+			e.printStackTrace();
+		} 
+		return res;
 	}
 }

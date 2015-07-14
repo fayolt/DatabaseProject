@@ -26,6 +26,7 @@ public class DBDao
 		return file.exists();
 		
 	}
+	
 	public boolean createDBFile(String filename) throws IOException 
 	{
 
@@ -33,6 +34,7 @@ public class DBDao
 		return file.createNewFile();
 
 	}
+	
 	@SuppressWarnings("unchecked")
 	public static List<String> getDBList() throws AppException, ClassNotFoundException, IOException
 	{
@@ -59,8 +61,10 @@ public class DBDao
 		return dbList;
 		
 	}
+	
 	@SuppressWarnings({ "resource", "unchecked" })
-	public boolean dbExist(Database db) throws AppException, IOException, ClassNotFoundException{
+	public boolean dbExist(Database db) throws AppException, IOException, ClassNotFoundException
+	{
 		boolean res = false;
 		File file = new File("init.db");
 		if (file.exists())
@@ -94,7 +98,9 @@ public class DBDao
 
 		return res;
 	}
-	public boolean create(String db_name, Database db, boolean bAppend) throws IOException{
+	
+	public boolean create(String db_name, Database db, boolean bAppend) throws IOException
+	{
 		bAppend = FileHelper.writeFile(("init.db"), db);
 		
 		String filePath;
@@ -107,8 +113,10 @@ public class DBDao
 		
 		return bAppend;
 	}
+	
 	@SuppressWarnings("unchecked")
-	public boolean readDBBlock(String db_name, Database db) throws AppException, IOException, ClassNotFoundException{
+	public boolean readDBBlock(String db_name, Database db) throws AppException, IOException, ClassNotFoundException
+	{
 		boolean res = false;
 		File file = new File("init.db");
 		if (file.exists())
@@ -145,11 +153,12 @@ public class DBDao
 		
 		return res;
 	}
-	public boolean getDatabase(String db_name, Database db) throws ClassNotFoundException, AppException, IOException{
+	
+	public boolean getDatabase(String db_name, Database db) throws ClassNotFoundException, AppException, IOException
+	{
 		
 		return  readDBBlock(db_name, db);
 
 	}
 	
-
 }

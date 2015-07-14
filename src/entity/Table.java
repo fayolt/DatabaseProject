@@ -7,8 +7,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-public class Table implements Serializable {
-
+public class Table implements Serializable 
+{
 	private String m_strName;
 	private int m_nFieldNum;
 	private int m_nRecordNum;
@@ -20,9 +20,11 @@ public class Table implements Serializable {
 	private Date m_tMTime;
 	
 	public List<Field> fieldArray; //list of fields in a table
+	
 	public Table()
 	{
 	}
+	
 	public Table(String tb_name)
 	{
 		m_strName = tb_name;
@@ -36,6 +38,7 @@ public class Table implements Serializable {
 
 		fieldArray = new ArrayList<Field>();
 	}
+	
 	public Table(Table tb)
 	{
 		m_strName = tb.getTableName();
@@ -49,69 +52,106 @@ public class Table implements Serializable {
 		m_tMTime = tb.getTableMTime();
 	}
 	
-	public String getTableName(){
+	public String getTableName()
+	{
 		return this.m_strName;
 	}
-	public int getFieldNum(){
+	
+	public int getFieldNum()
+	{
 		return this.m_nFieldNum;
 	}
-	public int getRecordNum(){
+	
+	public int getRecordNum()
+	{
 		return this.m_nRecordNum; 
 	}
-	public String getTdfPath(){
+	
+	public String getTdfPath()
+	{
 		return this.m_strTdfPath; 
 	}
-	public String getTrdPath(){
+	
+	public String getTrdPath()
+	{
 		return this.m_strTrdPath; 
 	}
-	public String getTicPath(){
+	
+	public String getTicPath()
+	{
 		return this.m_strTicPath; 
 	}
-	public String getTidPath(){
+	
+	public String getTidPath()
+	{
 		return this.m_strTidPath; 
 	}
-	public Date getTableCreationTime(){
+	
+	public Date getTableCreationTime()
+	{
 		return this.m_tCrTime;
 	}
 	
-	public Date getTableMTime(){
+	public Date getTableMTime()
+	{
 		return this.m_tMTime;
 	}
-	public void setTableName(String tb_name){
+	
+	public void setTableName(String tb_name)
+	{
 		this.m_strName = tb_name;
 	}
-	public void setRecordNum(int rec_num){
+	
+	public void setRecordNum(int rec_num)
+	{
 		this.m_nRecordNum = rec_num;
 	}
-	public void setFieldNum(int field_num){
+	
+	public void setFieldNum(int field_num)
+	{
 		this.m_nFieldNum = field_num;
 	}
-	public void setTdfPath(String tb_tdfPath){
+	
+	public void setTdfPath(String tb_tdfPath)
+	{
 		this.m_strTdfPath = tb_tdfPath;
 	}
-	public void setTrdPath(String tb_trdPath){
+	
+	public void setTrdPath(String tb_trdPath)
+	{
 		this.m_strTrdPath = tb_trdPath;
 	}
-	public void setTicPath(String tb_ticPath){
+	
+	public void setTicPath(String tb_ticPath)
+	{
 		this.m_strTicPath = tb_ticPath;
 	}
-	public void setTidPath(String tb_tidPath){
+	
+	public void setTidPath(String tb_tidPath)
+	{
 		this.m_strTidPath = tb_tidPath;
 	}
-	public	void setTableCreationTime(Date tb_ctime){
+	
+	public	void setTableCreationTime(Date tb_ctime)
+	{
 		this.m_tCrTime = tb_ctime;
 	}
-	public void setTableMTime(Date tb_mtime){
+	
+	public void setTableMTime(Date tb_mtime)
+	{
 		this.m_tMTime = tb_mtime;
 	}
-	public List<Field> getFieldArray() {
+	
+	public List<Field> getFieldArray() 
+	{
 		return fieldArray;
 	}
-	public void setFieldArray(List<Field> fieldArray) {
+	
+	public void setFieldArray(List<Field> fieldArray) 
+	{
 		this.fieldArray = fieldArray;
 	}
 	
 	//public void AddField(CFieldEntity&);
 	//CFieldEntity* getField(CString);
-
 }

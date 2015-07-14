@@ -1,8 +1,10 @@
 package logic;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
+
+import javax.swing.JOptionPane;
 
 import util.AppException;
 import dao.TableDao;
@@ -76,4 +78,28 @@ public class TableLogic
 		filepath = db.getDBFilePath() + "\\" +db.getDBName() + ".tb";
 		return tableDao.getTables(filepath, tbArray);
 	}
+
+	public static boolean update(Table tb, Vector data)
+	{
+		TableDao tableDao = new TableDao();
+		String filepath;
+		filepath = tb.getTdfPath();
+		
+		boolean res = true;
+		if (tableDao.isValidFile(filepath))
+		{
+			res = tableDao.update(tb, data);
+		}
+		else
+		{
+			new JOptionPane("the selected table has no fields! update aborted!");
+			return false;
+		}
+		//int nRecordNum = te.getRecordNum()+1;
+		//te.setRecordNum(nRecordNum);
+	
+		//String strTableFile = 
+		return res;
+	}
+
 }
